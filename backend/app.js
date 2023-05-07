@@ -1,6 +1,8 @@
 // const dotenv = require('dotenv');
 const express = require('express');
 const CategoryRouter = require('./routes/category.js');
+const ProductRouter = require('./routes/product.js');
+const UserRouter = require('./routes/user.js');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -12,34 +14,21 @@ app.use(cors());
 app.use(express.static(__dirname + '/public'));
 
 app.use("/category", CategoryRouter);
-// File upload
-app.post(
-    "/upload",
-    fileUpload(
-        {
-            createParentPath: true
-        }
-    ),
-    (req, res) => {
-        const image = req.files.image;
-        const imageName = Math.floor(Math.random() * 1000) + "-" + new Date().getTime() + image.name;
-        const desti = __dirname + "/public/uploads/product/" + imageName;
-        try {
-            image.mv(desti);
-            res.send({
-                msg: "Success"
-            });
-        } catch (err) {
-            res.send({
-                msg: "Error"
-            });
-        }
+app.use("/product", ProductRouter);
+app.use("/user", UserRouter);
+
+
+// Data connection and server connection
+// mongoose.connect('mongodb+srv://mdaftaab:qqn0IYdkvbpnZlHl@cluster0.gxdgrdd.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(
+    "mongodb://0.0.0.0:27017",
+    {
+        dbName: "ishop",
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
     }
 )
-// ------------
-mongoose.connect(
-    'mongodb+srv://bhagirath:XbPcys1BefQkdgMj@cluster0.oiuxnke.mongodb.net/?retryWrites=true&w=majority'
-).then(
+.then(
     () => {
         app.listen(
             5000,

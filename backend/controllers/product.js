@@ -1,19 +1,22 @@
-const Category = require('../models/category.js');
+const Product = require('../models/product.js');
 const fs = require('fs');
 const path = require('path');
-class CategoryController {
+class ProductController {
     save = (data) => {
         return new Promise(
             (resolve, reject) => {
                 try {
-                    const category = new Category(
+                    const product = new Product(
                         {
                             name: data.name,
-                            slug: data.slug,
+                            description: data.description,
+                            original_price: data.o_price,
+                            discounted_price: data.d_price,
+                            category_id: data.category,
                             image: data.image
                         }
                     )
-                    category.save()
+                    product.save()
                         .then(
                             (success) => {
                                 resolve({
@@ -24,6 +27,7 @@ class CategoryController {
                         )
                         .catch(
                             (error) => {
+                                console.log(error)
                                 reject({
                                     msg: "Unable to add data",
                                     status: 0
@@ -44,7 +48,7 @@ class CategoryController {
             async (resolve, rejected) => {
                 try {
                     if (id !== undefined) {
-                        let data = await Category.findById(id);
+                        let data = await Product.findById(id);
                         if (data == null) {
                             rejected({
                                 status: 0,
@@ -53,19 +57,19 @@ class CategoryController {
                         } else {
                             resolve({
                                 status: 1,
-                                category: data,
-                                path: "http://localhost:5000/uploads/category/",
+                                product: data,
+                                path: "http://localhost:5000/uploads/product/",
                             });
                         }
 
                     } else {
-                        let data = await Category.find().sort({
+                        let data = await Product.find().sort({
                             _id: 'desc'
                         });
                         resolve({
                             status: 1,
-                            category: data,
-                            path: "http://localhost:5000/uploads/category/",
+                            product: data,
+                            path: "http://localhost:5000/uploads/product/",
                             msg: `Total ${data.length} records found`
                         });
                     }
@@ -83,7 +87,7 @@ class CategoryController {
         return new Promise(
             async (resolve, reject) => {
                 try {
-                    Category.deleteOne({ _id: id })
+                    Product.deleteOne({ _id: id })
                         .then(
                             () => {
                                 const imagePath = path.join(__dirname, "../", "public/uploads/category", imgName);
@@ -104,7 +108,6 @@ class CategoryController {
                         )
                 }
                 catch (err) {
-                    console.log(err.message);
                     reject({
                         msg: "Internal server error",
                         status: 0
@@ -117,7 +120,7 @@ class CategoryController {
     updateData = (id, newData) => {
         return new Promise(
             (resolve, reject) => {
-                Category.updateOne(
+                Product.updateOne(
                     {
                         _id: id
                     },
@@ -143,4 +146,4 @@ class CategoryController {
 
 }
 
-module.exports = CategoryController;
+module.exports = ProductController;

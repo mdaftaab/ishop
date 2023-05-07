@@ -10,7 +10,7 @@ import AddCategory from "./Pages/Admin/Category/Add";
 import EditCategory from "./Pages/Admin/Category/Edit";
 import ViewCategory from "./Pages/Admin/Category/View";
 import AddProduct from "./Pages/Admin/Product/Add";
-import ViewProduct from "./Pages/Admin/Category/View";
+import ViewProduct from "./Pages/Admin/Product/View";
 import ContextHolder from "./Context/ContextHolder";
 const router = createBrowserRouter([
   {

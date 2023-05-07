@@ -24,6 +24,20 @@ export default function SideMenu() {
             ]
         },
         {
+            name: "User",
+            multi: true,
+            items: [
+                {
+                    route: 'Add',
+                    path: "/admin/user/add"
+                },
+                {
+                    route: 'View',
+                    path: "/admin/user"
+                }
+            ]
+        },
+        {
             name: "Product",
             multi: true,
             items: [

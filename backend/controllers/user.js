@@ -1,19 +1,20 @@
-const Category = require('../models/category.js');
+const User = require('../models/user.js');
 const fs = require('fs');
 const path = require('path');
-class CategoryController {
+class UserController {
     save = (data) => {
         return new Promise(
             (resolve, reject) => {
                 try {
-                    const category = new Category(
+                    const user = new User(
                         {
                             name: data.name,
-                            slug: data.slug,
+                            email: data.email,
+                            age: data.age,
                             image: data.image
                         }
                     )
-                    category.save()
+                    user.save()
                         .then(
                             (success) => {
                                 resolve({
@@ -44,7 +45,7 @@ class CategoryController {
             async (resolve, rejected) => {
                 try {
                     if (id !== undefined) {
-                        let data = await Category.findById(id);
+                        let data = await User.findById(id);
                         if (data == null) {
                             rejected({
                                 status: 0,
@@ -53,19 +54,19 @@ class CategoryController {
                         } else {
                             resolve({
                                 status: 1,
-                                category: data,
-                                path: "http://localhost:5000/uploads/category/",
+                                user: data,
+                                path: "http://localhost:5000/uploads/user/",
                             });
                         }
 
                     } else {
-                        let data = await Category.find().sort({
+                        let data = await User.find().sort({
                             _id: 'desc'
                         });
                         resolve({
                             status: 1,
-                            category: data,
-                            path: "http://localhost:5000/uploads/category/",
+                            user: data,
+                            path: "http://localhost:5000/uploads/user/",
                             msg: `Total ${data.length} records found`
                         });
                     }
@@ -83,10 +84,10 @@ class CategoryController {
         return new Promise(
             async (resolve, reject) => {
                 try {
-                    Category.deleteOne({ _id: id })
+                    User.deleteOne({ _id: id })
                         .then(
                             () => {
-                                const imagePath = path.join(__dirname, "../", "public/uploads/category", imgName);
+                                const imagePath = path.join(__dirname, "../", "public/uploads/user", imgName);
                                 fs.unlinkSync(imagePath); //delete
                                 resolve({
                                     msg: "Data deleted",
@@ -117,7 +118,7 @@ class CategoryController {
     updateData = (id, newData) => {
         return new Promise(
             (resolve, reject) => {
-                Category.updateOne(
+                User.updateOne(
                     {
                         _id: id
                     },
@@ -143,4 +144,4 @@ class CategoryController {
 
 }
 
-module.exports = CategoryController;
+module.exports = UserController;

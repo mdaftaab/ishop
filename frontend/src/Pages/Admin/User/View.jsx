@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { getUser, deleteUser } from '../../../Apis/user';
 import { MainContext } from '../../../Context/ContextHolder';
 import { AiFillDelete } from "react-icons/ai";
 import { BsFillPencilFill } from "react-icons/bs";
 import { Link } from 'react-router-dom';
-import { deleteProduct, getProduct } from '../../../Apis/product';
-import parse from 'html-react-parser';
 export default function View() {
-  const [productData, setProductData] = useState([]);
+  const [userData, setUserData] = useState([]);
   const { toggleLoader } = useContext(MainContext);
   const { notify } = useContext(MainContext)
   const [imagePath, setPath] = useState("");
@@ -14,15 +13,15 @@ export default function View() {
 
 
   const deleteHandler = (id, imgName) => {
-    deleteProduct(id, imgName)
+    deleteUser(id, imgName)
       .then(
         (success) => {
           notify(success.data.msg, success.data.status);
           if (success.data.status) {
-            getProduct()
+            getUser()
               .then(
                 (success) => {
-                  setProductData(success.data.product);
+                  setUserData(success.data.user);
                   setPath(success.data.path);
                   toggleLoader(false);
                 }
@@ -30,7 +29,7 @@ export default function View() {
               .catch(
                 (error) => {
                   // console.log(error);
-                  setProductData([]);
+                  setUserData([]);
                   toggleLoader(false);
                 }
               )
@@ -46,10 +45,10 @@ export default function View() {
   useEffect(
     () => {
       toggleLoader(true);
-      getProduct()
+      getUser()
         .then(
           (success) => {
-            setProductData(success.data.product);
+            setUserData(success.data.user);
             setPath(success.data.path);
             toggleLoader(false);
           }
@@ -57,7 +56,7 @@ export default function View() {
         .catch(
           (error) => {
             // console.log(error);
-            setProductData([]);
+            setUserData([]);
             toggleLoader(false);
           }
         )
@@ -72,14 +71,15 @@ export default function View() {
           <tr>
             <th scope="col">Sr</th>
             <th scope="col">Name</th>
-            <th scope="col">Description</th>
+            <th scope="col">Email</th>
+            <th scope="col">Age</th>
             <th>Image</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           {
-            productData.map(
+            userData.map(
               (d) => {
                 sr++;
                 return <TableRow key={d._id} data={{ sr, ...d, imagePath }} del={() => deleteHandler(d._id, d.image)} />
@@ -97,18 +97,15 @@ const TableRow = ({ data, del }) => {
   return <tr>
     <td>{data.sr}</td>
     <td>{data.name}</td>
-    <td>
-      {
-        parse(data.description)
-      }
-    </td>
+    <td>{data.email}</td>
+    <td>{data.age}</td>
     <td>
       <img src={data.imagePath + data.image} alt="" width={"100px"} />
     </td>
     <td>
       <AiFillDelete style={{ color: "red" }} onClick={del} />
       {"    "}
-      <Link to={`/admin/category/edit/${data._id}`}>
+      <Link to={`/admin/user/edit/${data._id}`}>
         <BsFillPencilFill />
       </Link>
     </td>

@@ -1,5 +1,5 @@
 const express = require('express');
-const CategoryController = require('../controllers/category.js');
+const UserController = require('../controllers/user.js');
 const fileUpload = require('express-fileupload');
 const { getRandomImageName, getImageDest } = require('../helper.js');
 const path = require('path');
@@ -8,7 +8,7 @@ const Router = express.Router();
 Router.get(
     "/:id?",
     (req, res) => {
-        const response = new CategoryController().getData(req.params.id);
+        const response = new UserController().getData(req.params.id);
         response.then(
             (success) => {
                 res.send(success)
@@ -32,10 +32,10 @@ Router.post(
         const allowedExt = ['png', 'jpeg', 'jpg', 'gif','webp'];
         if (allowedExt.includes(ext.toLowerCase())) {
             const imageName = getRandomImageName(image.name);
-            const destination = getImageDest('category') + imageName;
+            const destination = getImageDest('user') + imageName;
             try {
                 image.mv(destination);
-                const response = new CategoryController().save(
+                const response = new UserController().save(
                     { image: imageName, ...req.body }
                 );
                 response.then(
@@ -67,7 +67,7 @@ Router.post(
 Router.delete(
     "/:id/:imgName",
     (req, res) => {
-        new CategoryController().deleteData(req.params.id, req.params.imgName)
+        new UserController().deleteData(req.params.id, req.params.imgName)
             .then(
                 (success) => {
                     res.send(success);
@@ -90,10 +90,10 @@ Router.post(
         const image = req.files?.image;
         if (image !== undefined) {
             imageName = getRandomImageName(image.name);
-            const destination = getImageDest('category') + imageName;
+            const destination = getImageDest('user') + imageName;
             try {
                 image.mv(destination);
-                const imagePath = path.join(__dirname, "../", "public/uploads/category", req.body.old_image_name);
+                const imagePath = path.join(__dirname, "../", "public/uploads/user", req.body.old_image_name);
                 fs.unlinkSync(imagePath); //delete
             } catch (err) {
                 console.log(err.message);
@@ -102,10 +102,11 @@ Router.post(
         }
         const newData = {
             name: req.body.name,
-            slug: req.body.slug,
+            email: req.body.email,
+            age: req.body.age,
             image: imageName
         };
-        new CategoryController().updateData(req.params.id, newData)
+        new UserController().updateData(req.params.id, newData)
             .then(
                 (success) => {
                     res.send(success);

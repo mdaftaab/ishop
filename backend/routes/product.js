@@ -1,5 +1,5 @@
 const express = require('express');
-const CategoryController = require('../controllers/category.js');
+const ProductController = require('../controllers/product.js');
 const fileUpload = require('express-fileupload');
 const { getRandomImageName, getImageDest } = require('../helper.js');
 const path = require('path');
@@ -8,7 +8,7 @@ const Router = express.Router();
 Router.get(
     "/:id?",
     (req, res) => {
-        const response = new CategoryController().getData(req.params.id);
+        const response = new ProductController().getData(req.params.id);
         response.then(
             (success) => {
                 res.send(success)
@@ -29,13 +29,13 @@ Router.post(
         const image = req.files.image;
         const imgNameArr = image.name.split(".");
         const ext = imgNameArr[imgNameArr.length - 1];
-        const allowedExt = ['png', 'jpeg', 'jpg', 'gif','webp'];
+        const allowedExt = ['png', 'jpeg', 'jpg', 'gif', 'webp'];
         if (allowedExt.includes(ext.toLowerCase())) {
             const imageName = getRandomImageName(image.name);
-            const destination = getImageDest('category') + imageName;
+            const destination = getImageDest('product') + imageName;
             try {
                 image.mv(destination);
-                const response = new CategoryController().save(
+                const response = new ProductController().save(
                     { image: imageName, ...req.body }
                 );
                 response.then(
@@ -67,7 +67,7 @@ Router.post(
 Router.delete(
     "/:id/:imgName",
     (req, res) => {
-        new CategoryController().deleteData(req.params.id, req.params.imgName)
+        new ProductController().deleteData(req.params.id, req.params.imgName)
             .then(
                 (success) => {
                     res.send(success);
@@ -90,10 +90,10 @@ Router.post(
         const image = req.files?.image;
         if (image !== undefined) {
             imageName = getRandomImageName(image.name);
-            const destination = getImageDest('category') + imageName;
+            const destination = getImageDest('product') + imageName;
             try {
                 image.mv(destination);
-                const imagePath = path.join(__dirname, "../", "public/uploads/category", req.body.old_image_name);
+                const imagePath = path.join(__dirname, "../", "public/uploads/product", req.body.old_image_name);
                 fs.unlinkSync(imagePath); //delete
             } catch (err) {
                 console.log(err.message);
@@ -101,11 +101,14 @@ Router.post(
             }
         }
         const newData = {
-            name: req.body.name,
-            slug: req.body.slug,
+            name: data.name,
+            description: data.description,
+            original_price: data.o_price,
+            discounted_price: data.d_price,
+            category_id: data.category,
             image: imageName
-        };
-        new CategoryController().updateData(req.params.id, newData)
+        }
+        new ProductController().updateData(req.params.id, newData)
             .then(
                 (success) => {
                     res.send(success);
